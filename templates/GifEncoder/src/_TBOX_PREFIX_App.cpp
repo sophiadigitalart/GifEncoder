@@ -104,7 +104,7 @@ void _TBOX_PREFIX_App::draw()
 	gl::clear(Color::black());
 	gl::setMatricesWindow(toPixels(getWindowSize()), false);
 	for (int i = 0; i < nFrames; i++) {
-		//txs[i]->draw(i* (frameW / 2 + 5), frameH, frameW / 2, frameH / 2);
+		gl::draw(txs[i], Rectf(i* frameW, 0, frameW, frameH));
 	}
 
 }

@@ -57,8 +57,8 @@ void GifEncoder::addFrame(ci::gl::Texture2dRef img, float _duration) {
 	const int32_t width = pixels.getWidth();
 	const int32_t halfWidth = width / 2;
 
-	//const int32_t numBytes = pixels.getPixelBytes();
-	//unsigned char * px = new unsigned char[w * h * 8];
+	const int32_t numBytes = pixels.getPixelBytes();
+	unsigned char * px = new unsigned char[w * h * 8];
 
 	//for (int32_t y = 0; y < height; ++y) {
 	//	unsigned char *rowPtr = pixels.getData(ivec2(0, y));
@@ -68,22 +68,17 @@ void GifEncoder::addFrame(ci::gl::Texture2dRef img, float _duration) {
 	//			/*unsigned char temp = rowPtr[x*numBytes + c];
 	//			rowPtr[x*numBytes + c] = rowPtr[(width - x - 1)*numBytes + c];
 	//			rowPtr[(width - x - 1)*numBytes + c] = temp;
+	int pxNum = 0;
+	for (int32_t y = 0; y < pixels.getHeight(); ++y) {
+		for (int32_t x = 0; x < pixels.getWidth(); ++x) {
+			px[pxNum] = (unsigned char)pixels.getData(ivec2(x, y)); 
+			pxNum++;
+		}
+	}
 	
-	//for (int32_t y = 0; y < pixels.getHeight(); ++y) {
-	//	for (int32_t x = 0; x < pixels.getWidth(); ++x) {
-	//		int colorNumber = colorToIndex(pixels.getPixel(ivec2(x, y)));
-	//		if (colorNumber != 0)
-	//			voteCount[colorNumber - 1]++; // std::map value-initializes with 0 for scalars
-	//	}
-	//}
-	//
-	//*/
-	//		}
-	//	}
-	//}
 	//GifFrame * gifFrame = GifEncoder::createGifFrame(px, w, h, 8, _duration);
 	//frames.push_back(gifFrame);
-    addFrame((unsigned char *)pixels.getPixelBytes(), w, h, 8, _duration);//pixels.getPixels().getBitsPerPixel()
+  addFrame(px, w, h, 8, _duration);//pixels.getPixels().getBitsPerPixel()
 }
 
 void GifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, float duration) {
