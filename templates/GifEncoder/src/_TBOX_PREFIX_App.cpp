@@ -43,8 +43,7 @@ _TBOX_PREFIX_App::_TBOX_PREFIX_App()
 	nFrames = 0;
 	frameW = 320;
 	frameH = 240;
-	//frame= ci::gl::Texture::create(frameW, frameH, ci::gl::Texture::Format().loadTopDown(true));
-	frame = ci::gl::Texture::create(loadImage(loadAsset("0.jpg")), ci::gl::Texture::Format().loadTopDown(true));
+	frame = ci::gl::Texture::create(loadImage(loadAsset("0.jpg")), ci::gl::Texture::Format().loadTopDown(false));
 
 	gifEncoder.setup(frameW, frameH, .25, 256);
 }
@@ -82,7 +81,7 @@ void _TBOX_PREFIX_App::keyDown(KeyEvent event)
 		captureFrame();
 		break;
 	case KeyEvent::KEY_s:
-		cout << "start saving\n" << endl;
+		CI_LOG_V("start saving");
 		gifEncoder.save(toString(getElapsedFrames()) + ".gif");
 		break;
 	case KeyEvent::KEY_ESCAPE:
@@ -109,7 +108,7 @@ void _TBOX_PREFIX_App::draw()
 
 }
 void _TBOX_PREFIX_App::onGifSaved(string &fileName) {
-	cout << "gif saved as " << fileName << endl;
+	CI_LOG_V("gif saved as " + fileName);
 }
 void _TBOX_PREFIX_App::captureFrame() {
 	gifEncoder.addFrame(frame);

@@ -3,5 +3,6 @@
 <template name="GifEncoder: Basic" parent="org.libcinder.apptemplates.basicopengl">
 	<requires>com.sophiadigitalart.gifencoder</requires>
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<asset>assets/0.jpg</asset>
 </template>
 </cinder>
