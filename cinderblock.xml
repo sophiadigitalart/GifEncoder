@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="Cinder-GifEncoder"
+	id="com.sophiadigitalart.gifencoder"
+	author="Bruce Lane"
+	license="MIT"
+	summary="GifEncoder block for Cinder 0.9, port from "
+	url="https://github.com/sophiadigitalart/Cinder-GifEncoder"
+	git="git://github.com/sophiadigitalart/Cinder-GifEncoder.git"
+	>
+	<supports os="msw" />
+	<includePath>include</includePath>
+	<includePath>src</includePath>
+	<headerPattern>include/*.h</headerPattern>
+	<sourcePattern>src/*.cpp</sourcePattern>
+	<sourcePattern>src/*.c</sourcePattern>
+	<platform os="msw">
+		<libraryPath>lib</libraryPath>
+	</platform>
+</block>
+<template>templates/GifEncoder/template.xml</template>
+</cinder>
