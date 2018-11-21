@@ -83,7 +83,7 @@ void _TBOX_PREFIX_App::keyDown(KeyEvent event)
 		break;
 	case KeyEvent::KEY_s:
 		cout << "start saving\n" << endl;
-		gifEncoder.save("test.gif");
+		gifEncoder.save(toString(getElapsedFrames()) + ".gif");
 		break;
 	case KeyEvent::KEY_ESCAPE:
 		// quit the application
