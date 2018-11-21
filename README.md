@@ -6,8 +6,6 @@ Cinder block port of  openframeworks GifEncoder addon.
 
 Export animated gifs from openframeworks. 
 
-![Shameless plug](http://ofxgif.jesusgollonet.com/img/plug1.gif)
-
 Tested with [openframeworks](http://openframeworks.cc/) 0.8.1 osx. 
 
 ___
@@ -91,8 +89,6 @@ I'm thinking of fixes for both.
 one thing that it's not quite there yet is appropiate gif compression, so if your images are big or you have many frames you may end up with unnecesarily fat gifs. 
 
 If you use it, I'd love to see what for. Let me know: me@jesusgollonet.com
-	
-![Shameless plug](http://ofxgif.jesusgollonet.com/img/plug2.gif)
 
 ### LICENSE
 

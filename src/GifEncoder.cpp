@@ -1,6 +1,6 @@
 //
-//  ofxGifEncoder.cpp
-//  ofxGifEncoder
+//  GifEncoder.cpp
+//  GifEncoder
 //
 //  Created by Jesus Gollonet on 3/20/11.
 
@@ -12,10 +12,10 @@
 
 //ofEvent<string>	ofxGifEncoder::OFX_GIF_SAVE_FINISHED;
 
-ofxGifEncoder::ofxGifEncoder() {
+GifEncoder::GifEncoder() {
 }
 
-void ofxGifEncoder::setup(int _w, int _h,  float _frameDuration, int _nColors){
+void GifEncoder::setup(int _w, int _h,  float _frameDuration, int _nColors){
     if (_nColors < 2 || _nColors > 256) {
         CI_LOG_V( "ofxGifEncoder: nColors must be between 2 and 256. set to 256");
         nColors = 256;
@@ -29,15 +29,15 @@ void ofxGifEncoder::setup(int _w, int _h,  float _frameDuration, int _nColors){
     nChannels       = 0;
     ditherMode      = OFX_GIF_DITHER_NONE;
     bSaving         = false;
-    greenScreenColor.set(0, 255, 0);
+    greenScreenColor = Color(0, 255, 0);
 }
 
-ofxGifEncoder::~ofxGifEncoder() {}
+
 
 
 //--------------------------------------------------------------
-ofxGifEncoder::ofxGifFrame * ofxGifEncoder::createGifFrame(unsigned char * px, int _w, int _h, int _bitsPerPixel, float _duration ) {
-    ofxGifFrame * gf    = new ofxGifFrame();
+GifEncoder::GifFrame * GifEncoder::createGifFrame(unsigned char * px, int _w, int _h, int _bitsPerPixel, float _duration ) {
+    GifFrame * gf    = new GifFrame();
     gf->pixels          = px;
     gf->width           = _w; 
     gf->height          = _h;
@@ -45,7 +45,7 @@ ofxGifEncoder::ofxGifFrame * ofxGifEncoder::createGifFrame(unsigned char * px, i
     gf->bitsPerPixel    = _bitsPerPixel;
     return gf;
 }
-
+/*
 void ofxGifEncoder::addFrame(ofImage & img, float _duration) {
 
     if(img.getWidth() != w || img.getHeight() != h) {
@@ -78,7 +78,7 @@ void ofxGifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixe
     
     unsigned char * temp = new unsigned char[w * h * nChannels];
     memcpy(temp, px, w * h * nChannels);
-    ofxGifFrame * gifFrame   = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration) ;
+    gifFrame * gifFrame   = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration) ;
     frames.push_back(gifFrame);
 }
 void ofxGifEncoder::addFramePx(ofPixels * px, int _w, int _h, int _bitsPerPixel, float duration) {
@@ -103,19 +103,19 @@ void ofxGifEncoder::addFramePx(ofPixels * px, int _w, int _h, int _bitsPerPixel,
 
 	unsigned char * temp = new unsigned char[w * h * nChannels];
 	memcpy(temp, px, w * h * nChannels);
-	ofxGifFrame * gifFrame = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration);
+	gifFrame * gifFrame = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration);
 	frames.push_back(gifFrame);
 }
-
-void ofxGifEncoder::setNumColors(int _nColors){
+*/
+void GifEncoder::setNumColors(int _nColors){
     nColors = _nColors;
 }
 
-void ofxGifEncoder::setDitherMode(int _ditherMode){
+void GifEncoder::setDitherMode(int _ditherMode){
     ditherMode = _ditherMode;
 }
 
-void ofxGifEncoder::setFrameDuration(float _duration){
+void GifEncoder::setFrameDuration(float _duration){
     for (int i = 0; i < frames.size(); i++) {
         frames[i]->duration = _duration;
     }
@@ -124,80 +124,80 @@ void ofxGifEncoder::setFrameDuration(float _duration){
 
 
 //--------------------------------------------------------------
-void ofxGifEncoder::save (string _fileName) {
+void GifEncoder::save (string _fileName) {
     if(bSaving) {
-        CI_LOG_V( "ofxGifEncoder is already saving. wait for OFX_GIF_SAVE_FINISHED");
+        CI_LOG_V( "GifEncoder is already saving. wait for GIF_SAVE_FINISHED");
         return;
     }
     bSaving = true;
     fileName = _fileName;
-    if(!isThreadRunning()) start();
+    //if(!isThreadRunning()) start();
 }
 
 
 //--------------------------------------------------------------
-void ofxGifEncoder::threadedFunction() {
-	while( isThreadRunning() != 0 ) {
+void GifEncoder::threadedFunction() {
+	/*while( isThreadRunning() != 0 ) {
 		if( lock() ){
-            
+            */
             if(bSaving) {
                 doSave();
                 bSaving = false;
-                ofNotifyEvent(OFX_GIF_SAVE_FINISHED, fileName, this);
+                //ofNotifyEvent(GIF_SAVE_FINISHED, fileName, this);
             }
 
-			unlock();
+			/*unlock();
 			ofSleepMillis(10);
 		}
-	}
+	}*/
 }
 
-void ofxGifEncoder::doSave() {
+void GifEncoder::doSave() {
 	// create a multipage bitmap
-	FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, ofToDataPath(fileName).c_str(), TRUE, FALSE);
+	/*FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, ofToDataPath(fileName).c_str(), TRUE, FALSE);
 	for(int i = 0; i < frames.size(); i++ ) {
-        ofxGifFrame * currentFrame = frames[i];
+        GifFrame * currentFrame = frames[i];
         processFrame(currentFrame, multi);
     }
 	FreeImage_CloseMultiBitmap(multi); 
-    
+    */
 }
 
-void ofxGifEncoder::calculatePalette(FIBITMAP * bmp){
+void GifEncoder::calculatePalette(FIBITMAP * bmp){
     RGBQUAD *pal = FreeImage_GetPalette(bmp);
     
     for (int i = 0; i < 256; i++) {
-        palette.push_back(ofColor(pal[i].rgbRed, pal[i].rgbGreen, pal[i].rgbBlue));
-        ofLog() << palette.at(i);
+        palette.push_back(Color(pal[i].rgbRed, pal[i].rgbGreen, pal[i].rgbBlue));
+		CI_LOG_V(palette.at(i));
     }
 }
 
-int ofxGifEncoder::getClosestToGreenScreenPaletteColorIndex(){
-    ofLog() << "computing closest palete color";
+int GifEncoder::getClosestToGreenScreenPaletteColorIndex(){
+	CI_LOG_V("computing closest palette color");
 
     float minDistance = 100000;
     int closestIndex = 0;
-    ofVec3f greenScreenVec(greenScreenColor.r, greenScreenColor.g, greenScreenColor.b);
+    vec3 greenScreenVec(greenScreenColor.r, greenScreenColor.g, greenScreenColor.b);
     for (int i = 0; i < palette.size(); i++) {
         
-        ofVec3f currentVec(palette.at(i).r, palette.at(i).g, palette.at(i).b);
-        float currentDistance = currentVec.distance(greenScreenVec);
+        vec3 currentVec(palette.at(i).r, palette.at(i).g, palette.at(i).b);
+        /*float currentDistance = currentVec.distance(greenScreenVec);
         if (currentDistance < minDistance){
-            minDistance = currentDistance;
+            minDistance = currentDistance;*/
             closestIndex = i;
-        }
+        //}
     }
     return closestIndex;
     
 }
-
-void ofxGifEncoder::processFrame(ofxGifFrame * frame, FIMULTIBITMAP *multi){
+/*
+void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
     FIBITMAP * bmp = NULL;
     // we need to swap the channels if we're on little endian (see ofImage::swapRgb);
 
     
     if (frame->bitsPerPixel ==32){
-        ofLog() << "image is transaprent!";
+		CI_LOG_V("image is transparent!");
         frame = convertTo24BitsWithGreenScreen(frame);
     }
     
@@ -271,9 +271,9 @@ void ofxGifEncoder::processFrame(ofxGifFrame * frame, FIMULTIBITMAP *multi){
     // no need to unload processedBmp, as it points to either of the above
 
 }
-
-ofxGifEncoder::ofxGifFrame * ofxGifEncoder::convertTo24BitsWithGreenScreen(ofxGifFrame * frame){
-    ofColor otherColor(0,255,0);
+*/
+GifEncoder::GifFrame * GifEncoder::convertTo24BitsWithGreenScreen(GifFrame * frame){
+    Color otherColor(0,255,0);
 
     int width = frame->width;
     int height = frame->height;
@@ -282,7 +282,7 @@ ofxGifEncoder::ofxGifFrame * ofxGifEncoder::convertTo24BitsWithGreenScreen(ofxGi
     
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
-            ofColor c(
+            ColorA c = ColorA(
                       frame->pixels[(j * width + i) * 4 + 0],
                       frame->pixels[(j * width + i) * 4 + 1],
                       frame->pixels[(j * width + i) * 4 + 2],
@@ -292,7 +292,7 @@ ofxGifEncoder::ofxGifFrame * ofxGifEncoder::convertTo24BitsWithGreenScreen(ofxGi
             float normalAlpha = c.a / 255.f;
             float inverseAlpha = 1.f - normalAlpha ;
 
-            ofColor newColor(
+            Color newColor = Color(
                              c.r * normalAlpha + (otherColor.r * inverseAlpha) ,
                              c.g * normalAlpha + (otherColor.g * inverseAlpha),
                              c.b * normalAlpha + (otherColor.b *inverseAlpha)
@@ -305,14 +305,14 @@ ofxGifEncoder::ofxGifFrame * ofxGifEncoder::convertTo24BitsWithGreenScreen(ofxGi
        
     }
 
-    ofxGifFrame * newFrame = ofxGifEncoder::createGifFrame(newPixels, width, height, 24, frame->duration);
+    GifFrame * newFrame = GifEncoder::createGifFrame(newPixels, width, height, 24, frame->duration);
     return newFrame;
 }
 
  
 // from ofimage
 //----------------------------------------------------
-void ofxGifEncoder::swapRgb(ofxGifFrame * pix){
+void GifEncoder::swapRgb(GifFrame * pix){
 	if (pix->bitsPerPixel != 8){
 		int sizePixels		= pix->width * pix->height;
 		int cnt				= 0;
@@ -328,13 +328,13 @@ void ofxGifEncoder::swapRgb(ofxGifFrame * pix){
 	}
 }
 
-void ofxGifEncoder::exit() {
-    stop();
+void GifEncoder::exit() {
+    //stop();
 }
 
-void ofxGifEncoder::reset() {
+void GifEncoder::reset() {
     if(bSaving) {
-        CI_LOG_V( "ofxGifEncoder is saving. wait for OFX_GIF_SAVE_FINISHED to reset");
+        CI_LOG_V( "GifEncoder is saving. wait for GIF_SAVE_FINISHED to reset");
         return;
     }
     for (int i = 0; i < frames.size(); i++) {
