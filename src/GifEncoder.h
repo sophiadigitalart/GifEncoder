@@ -66,7 +66,7 @@ class GifEncoder {
         GifFrame * convertTo24BitsWithGreenScreen(GifFrame * frame);
         void processFrame(GifFrame * frame, FIMULTIBITMAP * multi);
         void swapRgb(GifFrame * pix);
-        void threadedFunction();
+        //void threadedFunction();
         void doSave();
         bool bSaving;
 

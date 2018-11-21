@@ -121,9 +121,6 @@ void _TBOX_PREFIX_App::captureFrame() {
 	//	.1f
 	//);
 
-	//ci::gl::Texture2dRef tx = new ofTexture();
-	//tx->allocate(frameW, frameH, GL_RGB);
-	//tx->loadData(vid.getPixels(), GL_RGB);//, frameW, frameH
 	txs.push_back(frame);
 
 	nFrames++;

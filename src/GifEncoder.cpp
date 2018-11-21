@@ -57,7 +57,7 @@ void GifEncoder::addFrame(ci::gl::Texture2dRef img, float _duration) {
 	Surface8u pixels(img->createSource());
 	writeImage(writeFile(fr), pixels);
 	
-    //addFrame((unsigned char *)&img-> .getPixelsRef(), w, h, img.getPixels().getBitsPerPixel(),  _duration);
+    addFrame((unsigned char *)&pixels, w, h, 8, _duration);//pixels.getPixels().getBitsPerPixel()
 }
 
 void GifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, float duration) {
@@ -136,36 +136,20 @@ void GifEncoder::save (string _fileName) {
     }
     bSaving = true;
     fileName = _fileName;
+	doSave();
     //if(!isThreadRunning()) start();
-}
-
-
-//--------------------------------------------------------------
-void GifEncoder::threadedFunction() {
-	/*while( isThreadRunning() != 0 ) {
-		if( lock() ){
-            */
-            if(bSaving) {
-                doSave();
-                bSaving = false;
-                //ofNotifyEvent(GIF_SAVE_FINISHED, fileName, this);
-            }
-
-			/*unlock();
-			ofSleepMillis(10);
-		}
-	}*/
 }
 
 void GifEncoder::doSave() {
 	// create a multipage bitmap
-	/*FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, ofToDataPath(fileName).c_str(), TRUE, FALSE);
+	fs::path fr = getAssetPath("") / fileName;
+	FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, fr.string().c_str(), TRUE, FALSE);//
 	for(int i = 0; i < frames.size(); i++ ) {
         GifFrame * currentFrame = frames[i];
         processFrame(currentFrame, multi);
     }
 	FreeImage_CloseMultiBitmap(multi); 
-    */
+    bSaving = false;
 }
 
 void GifEncoder::calculatePalette(FIBITMAP * bmp){
@@ -195,11 +179,10 @@ int GifEncoder::getClosestToGreenScreenPaletteColorIndex(){
     return closestIndex;
     
 }
-/*
+
 void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
     FIBITMAP * bmp = NULL;
     // we need to swap the channels if we're on little endian (see ofImage::swapRgb);
-
     
     if (frame->bitsPerPixel ==32){
 		CI_LOG_V("image is transparent!");
@@ -209,8 +192,7 @@ void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
 #ifdef TARGET_LITTLE_ENDIAN
     swapRgb(frame);
 #endif
-    
-    
+      
     // from here on, we can only deal with 24 bits
     
     // get the pixel data
@@ -242,8 +224,6 @@ void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
         FreeImage_SetTransparentIndex(processedBmp,getClosestToGreenScreenPaletteColorIndex());
     }
 
-
-    
     // dithering :)
     if(ditherMode > OFX_GIF_DITHER_NONE) {
         ditheredBmp = FreeImage_Dither(processedBmp, (FREE_IMAGE_DITHER)ditherMode);
@@ -274,9 +254,8 @@ void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
     if(ditheredBmp  != NULL) FreeImage_Unload(ditheredBmp);
     
     // no need to unload processedBmp, as it points to either of the above
-
 }
-*/
+
 GifEncoder::GifFrame * GifEncoder::convertTo24BitsWithGreenScreen(GifFrame * frame){
     Color otherColor(0,255,0);
 
