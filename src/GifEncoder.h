@@ -39,10 +39,10 @@ class GifEncoder {
     
         void setup(int _w, int _h, float _frameDuration = 0.1f, int _nColors = 256 );
         void setNumColors(int _nColors = 256);
-        void setDitherMode(int _ditherMode = OFX_GIF_DITHER_FS);
+        void setDitherMode(int _ditherMode = GIF_DITHER_FS);
         void setFrameDuration(float _duration); // for all gifs;
         
-        //static ofEvent<string>	OFX_GIF_SAVE_FINISHED;
+        //static ofEvent<string>	GIF_SAVE_FINISHED;
 
         // thread saving
         // blocking, verbose

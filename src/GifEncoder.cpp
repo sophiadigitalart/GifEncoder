@@ -10,7 +10,7 @@
 #define DWORD uint32_t
 #define BYTE uint8_t
 
-//ofEvent<string>	ofxGifEncoder::OFX_GIF_SAVE_FINISHED;
+//ofEvent<string>	ofxGifEncoder::GIF_SAVE_FINISHED;
 
 GifEncoder::GifEncoder() {
 }
@@ -27,13 +27,10 @@ void GifEncoder::setup(int _w, int _h,  float _frameDuration, int _nColors){
     nColors         = _nColors;
     bitsPerPixel    = 0;
     nChannels       = 0;
-    ditherMode      = OFX_GIF_DITHER_NONE;
+    ditherMode      = GIF_DITHER_NONE;
     bSaving         = false;
     greenScreenColor = Color(0, 255, 0);
 }
-
-
-
 
 //--------------------------------------------------------------
 GifEncoder::GifFrame * GifEncoder::createGifFrame(unsigned char * px, int _w, int _h, int _bitsPerPixel, float _duration ) {
@@ -49,20 +46,49 @@ GifEncoder::GifFrame * GifEncoder::createGifFrame(unsigned char * px, int _w, in
 void GifEncoder::addFrame(ci::gl::Texture2dRef img, float _duration) {
 
     if(img->getWidth() != w || img->getHeight() != h) {
-        CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
+        CI_LOG_V( "GifEncoder::addFrame image dimensions don't match, skipping frame");
         return;
     }
 	string filename = toString(getElapsedFrames()) + ".jpg";
 	fs::path fr = getAssetPath("") / filename;
 	Surface8u pixels(img->createSource());
 	writeImage(writeFile(fr), pixels);
+	const int32_t height = pixels.getHeight();
+	const int32_t width = pixels.getWidth();
+	const int32_t halfWidth = width / 2;
+
+	//const int32_t numBytes = pixels.getPixelBytes();
+	//unsigned char * px = new unsigned char[w * h * 8];
+
+	//for (int32_t y = 0; y < height; ++y) {
+	//	unsigned char *rowPtr = pixels.getData(ivec2(0, y));
+	//	for (int32_t x = 0; x < width; ++x) {
+	//		for (int c = 0; c < numBytes; ++c) {
+	//			px[x*numBytes + c] = rowPtr[x*numBytes + c];
+	//			/*unsigned char temp = rowPtr[x*numBytes + c];
+	//			rowPtr[x*numBytes + c] = rowPtr[(width - x - 1)*numBytes + c];
+	//			rowPtr[(width - x - 1)*numBytes + c] = temp;
 	
-    addFrame((unsigned char *)&pixels, w, h, 8, _duration);//pixels.getPixels().getBitsPerPixel()
+	//for (int32_t y = 0; y < pixels.getHeight(); ++y) {
+	//	for (int32_t x = 0; x < pixels.getWidth(); ++x) {
+	//		int colorNumber = colorToIndex(pixels.getPixel(ivec2(x, y)));
+	//		if (colorNumber != 0)
+	//			voteCount[colorNumber - 1]++; // std::map value-initializes with 0 for scalars
+	//	}
+	//}
+	//
+	//*/
+	//		}
+	//	}
+	//}
+	//GifFrame * gifFrame = GifEncoder::createGifFrame(px, w, h, 8, _duration);
+	//frames.push_back(gifFrame);
+    addFrame((unsigned char *)pixels.getPixelBytes(), w, h, 8, _duration);//pixels.getPixels().getBitsPerPixel()
 }
 
 void GifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, float duration) {
     if(_w != w || _h != h) {
-        CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
+        CI_LOG_V( "GifEncoder::addFrame image dimensions don't match, skipping frame");
         return;
     }
     
@@ -81,37 +107,11 @@ void GifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, 
     }
     
     unsigned char * temp = new unsigned char[w * h * nChannels];
-    memcpy(temp, px, w * h * nChannels);
+    /* RTE memcpy(temp, px, w * h * nChannels);*/
     GifFrame * gifFrame   = GifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration) ;
     frames.push_back(gifFrame);
 }
-/*
-void GifEncoder::addFramePx(ofPixels * px, int _w, int _h, int _bitsPerPixel, float duration) {
-	if (_w != w || _h != h) {
-		CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
-		return;
-	}
 
-	float tempDuration = duration;
-	if (tempDuration == 0.f) tempDuration = frameDuration;
-
-	nChannels = 0;
-	switch (_bitsPerPixel) {
-	case 8:     nChannels = 1;      break;
-	case 24:    nChannels = 3;      break;
-	case 32:    nChannels = 4;      break;
-	default:
-		CI_LOG_V( "bitsPerPixel should be 8, 24 or 32. skipping frame");
-		return;
-		break;
-	}
-
-	unsigned char * temp = new unsigned char[w * h * nChannels];
-	memcpy(temp, px, w * h * nChannels);
-	gifFrame * gifFrame = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration);
-	frames.push_back(gifFrame);
-}
-*/
 void GifEncoder::setNumColors(int _nColors){
     nColors = _nColors;
 }
@@ -126,8 +126,6 @@ void GifEncoder::setFrameDuration(float _duration){
     }
 }
 
-
-
 //--------------------------------------------------------------
 void GifEncoder::save (string _fileName) {
     if(bSaving) {
@@ -137,13 +135,12 @@ void GifEncoder::save (string _fileName) {
     bSaving = true;
     fileName = _fileName;
 	doSave();
-    //if(!isThreadRunning()) start();
 }
 
 void GifEncoder::doSave() {
 	// create a multipage bitmap
 	fs::path fr = getAssetPath("") / fileName;
-	FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, fr.string().c_str(), TRUE, FALSE);//
+	FIMULTIBITMAP *multi = FreeImage_OpenMultiBitmap(FIF_GIF, fr.string().c_str(), TRUE, FALSE);
 	for(int i = 0; i < frames.size(); i++ ) {
         GifFrame * currentFrame = frames[i];
         processFrame(currentFrame, multi);
@@ -225,7 +222,7 @@ void GifEncoder::processFrame(GifFrame * frame, FIMULTIBITMAP *multi){
     }
 
     // dithering :)
-    if(ditherMode > OFX_GIF_DITHER_NONE) {
+    if(ditherMode > GIF_DITHER_NONE) {
         ditheredBmp = FreeImage_Dither(processedBmp, (FREE_IMAGE_DITHER)ditherMode);
         processedBmp = ditheredBmp;
     }
@@ -313,7 +310,7 @@ void GifEncoder::swapRgb(GifFrame * pix){
 }
 
 void GifEncoder::exit() {
-    //stop();
+    
 }
 
 void GifEncoder::reset() {
