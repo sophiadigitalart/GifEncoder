@@ -33,6 +33,8 @@ private:
 	GifEncoder gifEncoder;
 	void onGifSaved(string & fileName);
 	void captureFrame();
+	ci::gl::Texture2dRef frame;
+	string						mPath;
 };
 
 
@@ -41,6 +43,8 @@ _TBOX_PREFIX_App::_TBOX_PREFIX_App()
 	nFrames = 0;
 	frameW = 320;
 	frameH = 240;
+	//frame= ci::gl::Texture::create(frameW, frameH, ci::gl::Texture::Format().loadTopDown(true));
+	frame = ci::gl::Texture::create(loadImage(loadAsset("0.jpg")), ci::gl::Texture::Format().loadTopDown(true));
 
 	gifEncoder.setup(frameW, frameH, .25, 256);
 }
@@ -108,6 +112,7 @@ void _TBOX_PREFIX_App::onGifSaved(string &fileName) {
 	cout << "gif saved as " << fileName << endl;
 }
 void _TBOX_PREFIX_App::captureFrame() {
+	gifEncoder.addFrame(frame);
 	//gifEncoder.addFramePx(
 	//	&vid.getPixels(),
 	//	vid.getWidth(),
@@ -119,7 +124,7 @@ void _TBOX_PREFIX_App::captureFrame() {
 	//ci::gl::Texture2dRef tx = new ofTexture();
 	//tx->allocate(frameW, frameH, GL_RGB);
 	//tx->loadData(vid.getPixels(), GL_RGB);//, frameW, frameH
-	//txs.push_back(tx);
+	txs.push_back(frame);
 
 	nFrames++;
 }

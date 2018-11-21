@@ -45,18 +45,22 @@ GifEncoder::GifFrame * GifEncoder::createGifFrame(unsigned char * px, int _w, in
     gf->bitsPerPixel    = _bitsPerPixel;
     return gf;
 }
-/*
-void ofxGifEncoder::addFrame(ofImage & img, float _duration) {
 
-    if(img.getWidth() != w || img.getHeight() != h) {
+void GifEncoder::addFrame(ci::gl::Texture2dRef img, float _duration) {
+
+    if(img->getWidth() != w || img->getHeight() != h) {
         CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
         return;
     }
-    
-    addFrame((unsigned char *)&img.getPixelsRef(), w, h, img.getPixels().getBitsPerPixel(),  _duration);
+	string filename = toString(getElapsedFrames()) + ".jpg";
+	fs::path fr = getAssetPath("") / filename;
+	Surface8u pixels(img->createSource());
+	writeImage(writeFile(fr), pixels);
+	
+    //addFrame((unsigned char *)&img-> .getPixelsRef(), w, h, img.getPixels().getBitsPerPixel(),  _duration);
 }
 
-void ofxGifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, float duration) {
+void GifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixel, float duration) {
     if(_w != w || _h != h) {
         CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
         return;
@@ -78,10 +82,11 @@ void ofxGifEncoder::addFrame(unsigned char *px, int _w, int _h, int _bitsPerPixe
     
     unsigned char * temp = new unsigned char[w * h * nChannels];
     memcpy(temp, px, w * h * nChannels);
-    gifFrame * gifFrame   = ofxGifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration) ;
+    GifFrame * gifFrame   = GifEncoder::createGifFrame(temp, w, h, _bitsPerPixel, tempDuration) ;
     frames.push_back(gifFrame);
 }
-void ofxGifEncoder::addFramePx(ofPixels * px, int _w, int _h, int _bitsPerPixel, float duration) {
+/*
+void GifEncoder::addFramePx(ofPixels * px, int _w, int _h, int _bitsPerPixel, float duration) {
 	if (_w != w || _h != h) {
 		CI_LOG_V( "ofxGifEncoder::addFrame image dimensions don't match, skipping frame");
 		return;
